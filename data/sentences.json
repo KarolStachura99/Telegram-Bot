@@ -1,1 +1,50 @@
-[]
+[
+  {
+    "text": "Karolek kkk",
+    "class": "pozytywny"
+  },
+  {
+    "text": "To był bardzo interesujący wykład",
+    "class": "pozytywny"
+  },
+  {
+    "text": "To był bardzo interesujący wykład, ponieważ dowiedziałem się wielu nowych rzeczy",
+    "class": "pozytywny"
+  },
+  {
+    "text": "Ten film jest świetny, bardzo dobry film",
+    "class": "pozytywny"
+  },
+  {
+    "text": "Wiedźmin to wspaniała gra, Geralt to potężny wiedźmin, super gra",
+    "class": "pozytywny"
+  },
+  {
+    "text": "To był bardzo interesujący wykład.",
+    "class": "neutralny"
+  },
+  {
+    "text": "System działa okropnie, aplikacja ciągle się zawiesza.",
+    "class": "negatywny"
+  },
+  {
+    "text": "To jest zły projekt.",
+    "class": "negatywny"
+  },
+  {
+    "text": "System działa okropnie, aplikacja ciągle się zawiesza.",
+    "class": "negatywny"
+  },
+  {
+    "text": "To jest zły projekt.",
+    "class": "negatywny"
+  },
+  {
+    "text": "Super robota!",
+    "class": "pozytywny"
+  },
+  {
+    "text": "Bot działa wspaniale i jest bardzo pomocny.",
+    "class": "pozytywny"
+  }
+]
