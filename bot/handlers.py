@@ -1,7 +1,9 @@
 import shlex
 import os
 import json
+import aiofiles
 import nltk
+import asyncio
 from collections import Counter
 from telegram import Update
 from telegram.ext import ContextTypes
@@ -47,8 +49,8 @@ async def task_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text_to_process = args[2]
     text_class = args[3]
 
-    # Zapis do JSON (wymóg z laboratorium)
-    save_sentence_to_json(text_to_process, text_class)
+    # Zapis do JSON 
+    await save_sentence_to_json(text_to_process, text_class)
 
     result_text = ""
 
@@ -82,7 +84,8 @@ async def task_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
     elif task_name == "plot_histogram":
         tokens = tokenize_text(text_to_process)
-        filepath = plot_histogram(tokens)
+        # Oddelegowanie renderowania wykresu do wątku
+        filepath = await asyncio.to_thread(plot_histogram, tokens) 
         await update.message.reply_photo(
             photo=open(filepath, 'rb'), 
             caption=f"✅ Zapisano do bazy.\nOto Twój histogram długości tokenów."
@@ -136,13 +139,13 @@ async def full_pipeline_command(update: Update, context: ContextTypes.DEFAULT_TY
     tfidf = get_tfidf(text_to_process)
 
     # 2. Generowanie wykresów
-    hist_path = plot_histogram(tokens)
-    wc_path = plot_wordcloud(cleaned)
+    hist_path = await asyncio.to_thread(plot_histogram, tokens)
+    wc_path = await asyncio.to_thread(plot_wordcloud, cleaned)
 
-    # 3. Podział na zdania i naiwne przypisanie klas (wymóg laboratorium)
+    # 3. Podział na zdania i naiwne przypisanie klasy
     sentences = nltk.sent_tokenize(text_to_process)
     for sentence in sentences:
-        save_sentence_to_json(sentence, text_class)
+        await save_sentence_to_json(sentence, text_class)
 
     # 4. Wysyłanie wyników do użytkownika
     raport = (
@@ -176,8 +179,8 @@ async def classifier_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     text_to_test = args[1]
     
-    # Uruchomienie modelu na podstawie danych z JSON
-    predicted_class = train_and_predict(text_to_test)
+    # Asynchroniczne oddelegowanie trenowania do osobnego wątku
+    predicted_class = await asyncio.to_thread(train_and_predict, text_to_test)
     
     await update.message.reply_text(
         f"🤖 **Wynik klasyfikacji:**\n\n"
@@ -193,9 +196,11 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Baza danych jest pusta. Dodaj teksty przez /task.")
         return
         
-    with open("data/sentences.json", "r", encoding="utf-8") as f:
+    # Asynchroniczny odczyt bazy z aiofiles
+    async with aiofiles.open("data/sentences.json", mode="r", encoding="utf-8") as f:
         try:
-            data = json.load(f)
+            content = await f.read()
+            data = json.loads(content) if content else []
         except json.JSONDecodeError:
             await update.message.reply_text("Błąd pliku bazy danych.")
             return
@@ -221,9 +226,9 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     unique_tokens = len(set(cleaned))
     
     # 4. Wykresy
-    bar_path = plot_bar_chart(cleaned)
-    hist_path = plot_histogram(cleaned)
-    wc_path = plot_wordcloud(cleaned)
+    bar_path = await asyncio.to_thread(plot_bar_chart, cleaned)
+    hist_path = await asyncio.to_thread(plot_histogram, cleaned)
+    wc_path = await asyncio.to_thread(plot_wordcloud, cleaned)
     
     raport = (
         f"📊 **STATYSTYKI ZBIORU DANYCH**\n\n"

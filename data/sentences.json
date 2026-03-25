@@ -46,5 +46,9 @@
   {
     "text": "Bot działa wspaniale i jest bardzo pomocny.",
     "class": "pozytywny"
+  },
+  {
+    "text": "To jest test asynchronicznego bota.",
+    "class": "testowa_klasa"
   }
 ]
