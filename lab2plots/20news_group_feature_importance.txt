@@ -1,0 +1,11 @@
+Top 10 cech (Feature Importance):
+god: 0.0201
+graphics: 0.0153
+rutgers: 0.0126
+nntp: 0.0096
+athos: 0.0093
+christian: 0.0093
+christians: 0.0090
+christ: 0.0088
+keith: 0.0088
+posting: 0.0078

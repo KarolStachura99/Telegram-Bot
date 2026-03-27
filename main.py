@@ -3,13 +3,14 @@ import logging
 from dotenv import load_dotenv
 from telegram.ext import Application, CommandHandler
 
-# Importujemy nasze komendy z nowego modułu
+# Importujemy nasze komendy z modułów
 from bot.handlers import (
     start_command, 
     task_command, 
     full_pipeline_command, 
     classifier_command, 
-    stats_command
+    stats_command,
+    classify_command
 )
 
 logging.basicConfig(
@@ -34,9 +35,11 @@ def main():
     app.add_handler(CommandHandler("full_pipeline", full_pipeline_command))
     app.add_handler(CommandHandler("classifier", classifier_command))
     app.add_handler(CommandHandler("stats", stats_command))
+    app.add_handler(CommandHandler("classify", classify_command))
 
     print("Bot uruchamia się pomyślnie. Naciśnij Ctrl+C, aby zatrzymać.")
     app.run_polling()
 
+    
 if __name__ == "__main__":
     main()
