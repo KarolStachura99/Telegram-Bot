@@ -19,17 +19,5 @@ def load_dataset(dataset_name: str) -> tuple:
         
         return texts, labels, class_names
         
-    elif dataset_name == "imdb":
-        # Tu w przyszłości dodamy logikę wczytywania CSV z recenzjami IMDB
-        raise NotImplementedError("Zbiór IMDB jeszcze nie zaimplementowany.")
-        
-    elif dataset_name == "amazon":
-        # Tu w przyszłości dodamy logikę wczytywania CSV z recenzjami Amazon
-        raise NotImplementedError("Zbiór Amazon jeszcze nie zaimplementowany.")
-        
-    elif dataset_name == "ag_news":
-        # Tu w przyszłości dodamy logikę wczytywania AG News
-        raise NotImplementedError("Zbiór AG News jeszcze nie zaimplementowany.")
-        
     else:
         raise ValueError(f"Nieznany zbiór danych: {dataset_name}")
