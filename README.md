@@ -1,6 +1,6 @@
 # Telegram Bot - NLP & Text Classification
 
-Zaawansowany bot na platformę Telegram, zbudowany w języku Python, służący do przetwarzania języka naturalnego (NLP) oraz przeprowadzania eksperymentów z zakresu uczenia maszynowego (Machine Learning). Projekt został zrealizowany w ramach dwóch etapów laboratoryjnych.
+Zaawansowany bot na platformę Telegram, zbudowany w języku Python, służący do przetwarzania języka naturalnego (NLP) oraz przeprowadzania eksperymentów z zakresu uczenia maszynowego (Machine Learning) i głębokich sieci neuronowych (Deep Learning). Projekt został zrealizowany w ramach trzech etapów laboratoryjnych.
 
 ---
 
@@ -29,33 +29,51 @@ Drugi etap rozszerza architekturę o moduł badawczy do przeprowadzania zautomat
 
 ### Główne funkcjonalności:
 * **Obsługa datasetów:** Zautomatyzowane pobieranie i ładowanie korpusów tekstowych (m.in. `20news_group`).
-* **Zaawansowane embeddingi:** Implementacja wektoryzacji za pomocą TF-IDF, BoW, a także gęstych osadzeń: modelu Word2Vec (trenowanego na korpusie) oraz pretrenowanego modelu GloVe.
+* **Zaawansowane embeddingi:** Implementacja wektoryzacji za pomocą TF-IDF, BoW, a także gęstych osadzeń: modelu Word2Vec oraz pretrenowanego modelu GloVe.
 * **Modele klasyfikacji:** Możliwość treningu modeli: Multinomial Naive Bayes (`nb`), Random Forest (`rf`), MLPClassifier (`mlp`) oraz Logistic Regression (`logreg`).
-* **Strojenie hiperparametrów:** Opcjonalne uruchamianie `GridSearchCV` w celu znalezienia optymalnych parametrów dla wybranych klasyfikatorów.
-* **Ewaluacja i raportowanie:** Zapis wyników eksperymentów (Accuracy, Macro F1, użyty Seed) do głównego pliku `lab2results.csv`.
-
-### Generowane artefakty badawcze (katalog `lab2plots/`):
-* **Wizualizacja przestrzeni wektorowej:** Rzuty embeddingów wykonane algorytmami redukcji wymiarowości: PCA, t-SNE oraz TruncatedSVD.
-* **Analiza modeli:** Macierze pomyłek (Confusion Matrix) dla każdego testowanego wariantu.
-* **Analiza cech:** Zapis najważniejszych cech (Top 10 Feature Importance) dla algorytmów opartych na BoW/TF-IDF.
-* **Podobne słowa:** Plik `lab2_similar_words.txt` oraz wykresy obrazujące relacje semantyczne wyciągnięte z modeli Word2Vec/GloVe.
-* **Chmury słów:** Generowane dla całego korpusu oraz niezależnie dla każdej klasy decyzyjnej.
+* **Strojenie hiperparametrów:** Opcjonalne uruchamianie `GridSearchCV`.
+* **Ewaluacja i raportowanie:** Zapis wyników do głównego pliku `lab2results.csv`.
 
 ### Dostępne komendy (Lab 2):
 Eksperymenty uruchamiane są za pomocą jednej, parametryzowanej komendy:
 `/classify dataset=<dataset_name> method=<model> gridsearch=<true/false> run=<n>`
 
-**Przykłady użycia:**
-* `/classify dataset=20news_group method=all gridsearch=false run=3`
-* `/classify dataset=20news_group method=nb gridsearch=true run=1`
+---
+
+## Etap 3: Laboratorium 3 - Głębokie Sieci Neuronowe i Transformery (Sentyment)
+
+Trzeci etap wprowadza asynchroniczne modele głębokiego uczenia (Deep Learning) z wykorzystaniem biblioteki Keras/TensorFlow oraz najnowocześniejsze modele językowe ze środowiska Hugging Face.
+
+### Główne funkcjonalności:
+* **Trening Sieci Sekwencyjnych:** Możliwość trenowania od zera modeli `SimpleRNN`, `LSTM` oraz `GRU` na zewnętrznych zbiorach danych (IMDB).
+* **Zarządzanie modelami (MLOps):** Zapis wytrenowanych wag do plików `.h5` oraz tokenizerów do `.pkl`, wraz ze zjawiskiem Lazy Loadingu zapobiegającym wyciekom pamięci RAM.
+* **Optymalizacja sieci:** Implementacja warstwy `Dropout` (0.5) w celu eliminacji zjawiska przeuczenia (overfittingu).
+* **Zaawansowana ewaluacja (Benchmarking):** Porównywanie sieci sekwencyjnych z podejściami klasycznymi (TextBlob, Stanza, Rule-based) oraz potężnymi Transformerami (pipeline `sentiment-analysis`).
+* **Generowanie artefaktów:** Rysowanie macierzy pomyłek (Confusion Matrix) biblioteką `seaborn` oraz zrzut logów skuteczności do `lab3results.csv`.
+
+### Dostępne komendy (Lab 3):
+* `/train <simplernn|lstm|gru> <dataset>` - Trenuje wybraną sieć na wskazanym zbiorze i rysuje wykres skuteczności.
+* `/sentiment method=<metoda> text="<tekst>" [dataset=<baza>]` - Predykcja sentymentu na żywo za pomocą wczytanego z dysku modelu.
+* `/compare dataset=<baza> methods=<metoda1,metoda2>` - Przeprowadza pełną ewaluację (Accuracy, Precision, Recall, F1) na zbiorze i rysuje Macierze Pomyłek.
+* `/add_sentiment "<tekst>" "<etykieta>"` - Zapisuje nowe zdanie do własnej bazy danych.
+* `/models` - Wyświetla listę wgranych i gotowych do użycia modeli `.h5`.
+* `/help` - Wyświetla pełną listę komend z poziomu komunikatora.
 
 ---
 
-## Wymagania i uruchomienie
+## Uruchomienie
 
-1. Sklonuj repozytorium na swój dysk lokalny.
-2. Utwórz wirtualne środowisko: `python -m venv venv`
-3. Aktywuj środowisko i zainstaluj zależności: `pip install -r requirements.txt`
-4. Utwórz plik `.env` w głównym katalogu projektu i dodaj w nim swój token bota:
-   `TELEGRAM_TOKEN=twoj_token_tutaj`
-5. Uruchom bota: `python main.py`
+** Środowisko należy wygenerować lokalnie na podstawie pliku `requirements.txt`.
+
+1. Sklonuj repozytorium na swój dysk lokalny lub rozpakuj archiwum `.zip`.
+2. Utwórz wirtualne środowisko w głównym folderze projektu: 
+   `python -m venv venv`
+3. Aktywuj środowisko:
+   * Windows: `venv\Scripts\activate`
+   * Mac/Linux: `source venv/bin/activate`
+4. Zainstaluj wszystkie wymagane biblioteki: 
+   `pip install -r requirements.txt`
+5. Skonfiguruj klucz API Telegrama (w zależności od implementacji w kodzie, zaktualizuj plik `.env` lub `config.py`):
+   `TELEGRAM_TOKEN=twój_token_od_botfather`
+6. Uruchom aplikację: 
+   `python main.py`
