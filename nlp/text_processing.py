@@ -39,7 +39,7 @@ def remove_stopwords_from_tokens(tokens: list) -> list:
     Przyjmuje listę tokenów i zwraca nową listę, 
     pozbawioną słów znajdujących się w słowniku stop words.
     """
-    # Zostawiamy tylko te słowa, których (po zamianie na małe litery) NIE MA w naszym zbiorze
+    # Zostawiamy tylko te słowa, których po zamianie na małe litery NIE MA w naszym zbiorze
     return [word for word in tokens if word.lower() not in POLISH_STOPWORDS]
 
 try:
@@ -82,7 +82,7 @@ def get_tfidf(text: str) -> str:
         X = vectorizer.fit_transform([text])
         features = vectorizer.get_feature_names_out()
         array = X.toarray()[0]
-        # Tworzymy czytelny słownik: słowo -> waga TF-IDF (zaokrąglona do 2 miejsc)
+        # Tworzymy czytelny słownik: słowo -> waga TF-IDF zaokrąglona do 2 miejsc
         tfidf_dict = {feat: round(val, 2) for feat, val in zip(features, array)}
         return str(tfidf_dict)
     except ValueError:

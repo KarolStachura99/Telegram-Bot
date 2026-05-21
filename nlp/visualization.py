@@ -7,16 +7,16 @@ import time
 from datetime import datetime
 
 
-# Czy folder "plots" w ogóle istnieje
+# Czy folder "plots" istnieje
 os.makedirs("plots", exist_ok=True)
 
 def generate_filename() -> str:
-    """Generuje wymaganą przez prowadzącego nazwę pliku, zapobiegając nadpisywaniu."""
+    """Generuje nazwę pliku, zapobiegając nadpisywaniu."""
     while True:
         now = datetime.now()
         filepath = f"plots/Sentence_{now.strftime('%Y-%m-%d_%H-%M-%S')}.png"
         
-        # Jeśli plik z tej samej sekundy jeszcze nie istnieje, możemy go użyć
+        # Jeśli plik jeszcze nie istnieje, możemy go użyć
         if not os.path.exists(filepath):
             return filepath
             

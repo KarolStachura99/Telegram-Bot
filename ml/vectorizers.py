@@ -48,8 +48,7 @@ def vectorize_texts(method: str, texts: list) -> np.ndarray:
         return X
         
     elif method == "glove":
-        # Pobieramy najlżejszy dostępny model GloVe (50 wymiarów, ok. 66 MB)
-        # Przy pierwszym uruchomieniu to pobieranie może chwilę zająć!
+        # Pobieramy najlżejszy dostępny model GloVe 
         print("Ładowanie modelu GloVe (to może potrwać przy pierwszym uruchomieniu)...")
         glove_model = api.load("glove-wiki-gigaword-50")
         vector_size = 50
