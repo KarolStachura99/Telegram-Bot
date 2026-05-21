@@ -149,17 +149,17 @@ async def full_pipeline_command(update: Update, context: ContextTypes.DEFAULT_TY
 
     # 4. Wysyłanie wyników do użytkownika
     raport = (
-        f"🚀 **PEŁNY PIPELINE ZAKOŃCZONY**\n\n"
+        f"🚀 PEŁNY PIPELINE ZAKOŃCZONY\n\n"
         f"Liczba wydzielonych zdań zapisanych do bazy: {len(sentences)}\n\n"
-        f"🔹 **Tokeny:** {tokens[:5]}...\n"
-        f"🔹 **Bez stopwords:** {cleaned[:5]}...\n"
-        f"🔹 **Lematyzacja:** {lemmatized[:5]}...\n"
-        f"🔹 **Stemming:** {stemmed[:5]}...\n"
-        f"🔹 **BoW:** {bow[:100]}...\n"
-        f"🔹 **TF-IDF:** {tfidf[:100]}..."
+        f"🔹 Tokeny: {tokens[:5]}...\n"
+        f"🔹 Bez stopwords: {cleaned[:5]}...\n"
+        f"🔹 Lematyzacja: {lemmatized[:5]}...\n"
+        f"🔹 Stemming: {stemmed[:5]}...\n"
+        f"🔹 BoW: {bow[:100]}...\n"
+        f"🔹 TF-IDF: {tfidf[:100]}..."
     )
     
-    await update.message.reply_text(raport, parse_mode='Markdown')
+    await update.message.reply_text(raport)
     await update.message.reply_photo(photo=open(hist_path, 'rb'), caption="Histogram długości tokenów")
     await update.message.reply_photo(photo=open(wc_path, 'rb'), caption="Word Cloud")
 
@@ -183,10 +183,9 @@ async def classifier_command(update: Update, context: ContextTypes.DEFAULT_TYPE)
     predicted_class = await asyncio.to_thread(train_and_predict, text_to_test)
     
     await update.message.reply_text(
-        f"🤖 **Wynik klasyfikacji:**\n\n"
+        f"🤖 Wynik klasyfikacji:\n\n"
         f"Tekst: '{text_to_test}'\n"
-        f"Przewidziana klasa: **{predicted_class.upper()}**",
-        parse_mode='Markdown'
+        f"Przewidziana klasa: {predicted_class.upper()}"
     )
 
 
@@ -231,7 +230,7 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     wc_path = await asyncio.to_thread(plot_wordcloud, cleaned)
     
     raport = (
-        f"📊 **STATYSTYKI ZBIORU DANYCH**\n\n"
+        f"📊 STATYSTYKI ZBIORU DANYCH\n\n"
         f"Liczba wszystkich tekstów: {len(data)}\n"
         f"Liczność klas: {class_counts}\n"
         f"Unikalne tokeny (bez stopwords): {unique_tokens}\n"
@@ -239,7 +238,7 @@ async def stats_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f"Przykładowe unikalne 3-gramy: {list(set(trigrams))[:3]}"
     )
     
-    await update.message.reply_text(raport, parse_mode='Markdown')
+    await update.message.reply_text(raport)
     await update.message.reply_photo(photo=open(bar_path, 'rb'), caption="Wykres najczęstszych słów")
     await update.message.reply_photo(photo=open(hist_path, 'rb'), caption="Histogram długości")
     await update.message.reply_photo(photo=open(wc_path, 'rb'), caption="Word Cloud dla całego zbioru")
