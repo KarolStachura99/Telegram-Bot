@@ -5,7 +5,9 @@ import matplotlib.pyplot as plt
 from telegram import Update
 from telegram.ext import ContextTypes
 import config
-
+from nlp.llm import summarize_text_with_ollama
+from nlp.translator import translate_text_with_transformers
+from nlp.ner import analyze_entities
 # ==========================================
 # LABORATORIUM 1: Przetwarzanie i Statystyki
 # ==========================================
@@ -259,3 +261,132 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "`/help` - Ten komunikat"
     )
     await update.message.reply_text(help_text, parse_mode="Markdown")
+
+async def summarize_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Obsługa komendy /summarize korzystającej z LLM (Ollama)."""
+    raw_text = update.message.text.replace("„", '"').replace("”", '"').replace("“", '"')
+    
+    try:
+        args = shlex.split(raw_text)
+    except ValueError:
+        await update.message.reply_text("Błąd cudzysłowów! Upewnij się, że tekst do streszczenia jest w cudzysłowach.")
+        return
+
+    if len(args) < 2:
+        await update.message.reply_text(
+            'Użycie: /summarize type=bullets length=short "Tekst do streszczenia"\n'
+            'Dostępne typy: abstractive, extractive, bullets.\n'
+            'Dostępne długości: short, medium, long.'
+        )
+        return
+
+    # Domyślne parametry
+    text_to_summarize = ""
+    summary_type = "abstractive"
+    length = "medium"
+
+    # Parsowanie argumentów
+    for arg in args[1:]:
+        if arg.startswith("type="):
+            summary_type = arg.split("=")[1]
+        elif arg.startswith("length="):
+            length = arg.split("=")[1]
+        else:
+            text_to_summarize = arg
+
+    if not text_to_summarize:
+        await update.message.reply_text("Nie podano tekstu do streszczenia!")
+        return
+
+    # Ważne: Informujemy użytkownika, że model pracuje. 
+    # LLM potrzebuje chwili na wygenerowanie odpowiedzi.
+    await update.message.reply_text(" Wysyłam zapytanie do lokalnego modelu Llama 3.2. Proszę czekać, to może potrwać kilkanaście sekund...")
+
+    # Uruchamiamy Ollamę w osobnym wątku (asyncio.to_thread), 
+    # aby "myślenie" AI nie zawiesiło całego bota dla innych użytkowników!
+    summary, gen_time = await asyncio.to_thread(
+        summarize_text_with_ollama, text_to_summarize, summary_type, length
+    )
+
+    response_msg = (
+        f"**Streszczenie (Llama 3.2)**\n\n"
+        f"{summary}\n\n"
+        f"Czas generowania: {gen_time} s"
+    )
+
+    # Używamy try-except na wypadek, gdyby model oddał formatowanie, którego Telegram nie lubi
+    try:
+        await update.message.reply_text(response_msg, parse_mode='Markdown')
+    except Exception:
+        await update.message.reply_text(response_msg) # Wersja bez formatowania w razie błędu
+
+
+async def translate_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Obsługa komendy /translate do tłumaczenia offline."""
+    raw_text = update.message.text.replace("„", '"').replace("”", '"').replace("“", '"')
+    
+    try:
+        args = shlex.split(raw_text)
+    except ValueError:
+        await update.message.reply_text("Błąd cudzysłowów! Upewnij się, że tekst do tłumaczenia jest w cudzysłowach.")
+        return
+
+    if len(args) < 2:
+        await update.message.reply_text('Użycie: /translate "Tekst do przetłumaczenia"')
+        return
+
+    text_to_translate = args[1]
+    
+    await update.message.reply_text("Analizuję język i przygotowuję tłumaczenie offline (za pierwszym razem może to potrwać chwilę ze względu na pobranie modelu z Hugging Face)...")
+
+    # Oddelegowanie do osobnego wątku
+    translated_text = await asyncio.to_thread(translate_text_with_transformers, text_to_translate)
+    
+    await update.message.reply_text(translated_text)
+
+async def ner_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Obsługa rozbudowanej komendy /ner obsługującej spaCy oraz Stanza."""
+    raw_text = update.message.text.replace("„", '"').replace("”", '"').replace("“", '"')
+    
+    try:
+        args = shlex.split(raw_text)
+    except ValueError:
+        await update.message.reply_text("Błąd cudzysłowów! Upewnij się, że tekst zamknięty jest w prawidłowych znakach cudzysłowu.")
+        return
+
+    if len(args) < 2:
+        await update.message.reply_text(
+            'Użycie:\n'
+            '  /ner method=spacy "Tekst do analizy"\n'
+            '  /ner method=stanza "Tekst do analizy"'
+        )
+        return
+
+    # Domyślne wartości parametrów
+    method = "spacy"
+    text_to_analyze = ""
+
+    # Parsowanie przekazanych argumentów wejściowych
+    for arg in args[1:]:
+        if arg.startswith("method="):
+            method = arg.split("=")[1].lower()
+        else:
+            text_to_analyze = arg
+
+    if method not in ["spacy", "stanza"]:
+        await update.message.reply_text("Niepoprawna metoda! Dostępne opcje to: spacy, stanza.")
+        return
+
+    if not text_to_analyze:
+        await update.message.reply_text("Nie podano tekstu do analizy strukturalnej!")
+        return
+
+    await update.message.reply_text(
+        f"Uruchamiam proces analizy NER przy użyciu silnika {method.upper()}...\n"
+        f"*(Uwaga: pierwsze uruchomienie potoku Stanza wymusi pobranie modeli sieciowych, co potrwa dłuższą chwilę)*"
+    )
+
+    # Bezpieczne oddelegowanie ciężkich obliczeń sieci neuronowej do osobnego wątku
+    analysis_result = await asyncio.to_thread(analyze_entities, text_to_analyze, method)
+    
+    await update.message.reply_text(analysis_result, parse_mode='Markdown')

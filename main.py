@@ -27,7 +27,10 @@ from bot.commands import(
     add_sentiment_command,
     models_command,
     compare_command,
-    help_command
+    help_command,
+    summarize_command,
+    translate_command,
+    ner_command
 )
 
 logging.basicConfig(
@@ -59,6 +62,9 @@ def main():
     app.add_handler(CommandHandler("models", models_command))
     app.add_handler(CommandHandler("compare", compare_command))
     app.add_handler(CommandHandler("help", help_command))
+    app.add_handler(CommandHandler("summarize", summarize_command))
+    app.add_handler(CommandHandler("translate", translate_command))
+    app.add_handler(CommandHandler("ner", ner_command))
 
     print("Bot uruchamia się pomyślnie. Naciśnij Ctrl+C, aby zatrzymać.")
     app.run_polling()

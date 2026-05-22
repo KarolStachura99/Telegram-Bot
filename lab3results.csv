@@ -1,3 +1,5 @@
 Model,Dataset,Accuracy,Precision,Recall,F1-Score
 RULE,custom,0.56,0.7205,0.56,0.522
 SIMPLERNN,custom,0.76,0.856,0.76,0.753
+RULE,custom,0.56,0.7205,0.56,0.522
+SIMPLERNN,custom,0.76,0.856,0.76,0.7616
