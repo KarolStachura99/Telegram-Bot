@@ -1,6 +1,6 @@
 # Telegram Bot - NLP & Text Classification
 
-Zaawansowany bot na platformę Telegram, zbudowany w języku Python, służący do przetwarzania języka naturalnego (NLP) oraz przeprowadzania eksperymentów z zakresu uczenia maszynowego (Machine Learning) i głębokich sieci neuronowych (Deep Learning). Projekt został zrealizowany w ramach trzech etapów laboratoryjnych.
+Zaawansowany bot na platformę Telegram, zbudowany w języku Python, służący do przetwarzania języka naturalnego (NLP) oraz przeprowadzania eksperymentów z zakresu uczenia maszynowego (Machine Learning), głębokich sieci neuronowych (Deep Learning) i generatywnej sztucznej inteligencji. Projekt został zrealizowany w ramach czterech etapów laboratoryjnych.
 
 ---
 
@@ -61,10 +61,30 @@ Trzeci etap wprowadza asynchroniczne modele głębokiego uczenia (Deep Learning)
 
 ---
 
+## Etap 4: Laboratorium 4 - Generatywne LLM, Translacja i Ekstrakcja Bytów (NER/NEL)
+
+Czwarty etap poszerza bota o możliwości w pełni lokalnej, generatywnej sztucznej inteligencji, głębokie modele koder-dekoder oraz łączenie tekstu z zewnętrznymi bazami wiedzy.
+
+### Główne funkcjonalności:
+* **Streszczanie tekstu (Lokalne LLM):** Asynchroniczna integracja z silnikiem Ollama i modelem Llama 3.2. Wdrożenie System Promptów i reguł Prompt Engineeringu zapobiegających halucynacjom modelu.
+* **Tłumacz Offline (Transformers):** Tłumaczenie języków wspierane biblioteką `langdetect` z użyciem modeli koder-dekoder (Helsinki-NLP / Hugging Face). Implementacja bezpiecznego, ręcznego potoku wywołującego `AutoTokenizer` oraz `AutoModelForSeq2SeqLM`.
+* **Rozpoznawanie Bytów (NER):** Implementacja dwóch niezależnych i konkurencyjnych podejść analitycznych:
+  * Lekkiego potoku statystycznego z użyciem **spaCy** (model `pl_core_news_lg` zoptymalizowany pod polską fleksję).
+  * Złożonych modeli neuronowych z Uniwersytetu Stanforda z użyciem **Stanza** (mapowanie standardów NKJP, precyzyjna tokenizacja MWT).
+* **Linkowanie (NEL) i Bazy Wiedzy:** Algorytm automatycznej lematyzacji nazw własnych, nawiązujący połączenie z API Wikipedii w celu pobierania i rozwiązywania konfliktów (NED) kontekstowych dla wyodrębnionych encji.
+
+### Dostępne komendy (Lab 4):
+* `/summarize type=<bullets/abstractive> length=<short/medium/long> "tekst"` - Streszczenie wskazanego tekstu za pomocą modelu Llama 3.2.
+* `/translate "tekst"` - Wykrycie języka i tłumaczenie offline (PL/EN).
+* `/ner method=<spacy/stanza> "tekst"` - Analiza obiektów nazwanych i generowanie linków do Wikipedii przy użyciu wybranego silnika.
+
+---
+
 ## Uruchomienie
 
-** Środowisko należy wygenerować lokalnie na podstawie pliku `requirements.txt`.
+**Środowisko należy wygenerować lokalnie na podstawie pliku `requirements.txt`. Upewnij się, że spełnione są wszystkie wymagania systemowe dla modeli offline.**
 
+### Krok 1: Podstawowa instalacja
 1. Sklonuj repozytorium na swój dysk lokalny lub rozpakuj archiwum `.zip`.
 2. Utwórz wirtualne środowisko w głównym folderze projektu: 
    `python -m venv venv`
@@ -73,7 +93,16 @@ Trzeci etap wprowadza asynchroniczne modele głębokiego uczenia (Deep Learning)
    * Mac/Linux: `source venv/bin/activate`
 4. Zainstaluj wszystkie wymagane biblioteki: 
    `pip install -r requirements.txt`
-5. Skonfiguruj klucz API Telegrama (w zależności od implementacji w kodzie, zaktualizuj plik `.env` lub `config.py`):
+
+### Krok 2: Instalacja zasobów dla Lab 4 (Zewnętrzne modele)
+1. **Model spaCy dla języka polskiego:** W aktywowanym środowisku wirtualnym pobierz duży model analityczny:  
+   `python -m spacy download pl_core_news_lg`
+2. **Model LLM (Ollama):** Zainstaluj oprogramowanie [Ollama](https://ollama.com/), a następnie w standardowym terminalu pobierz model używany do streszczeń (ok. 2 GB):  
+   `ollama pull llama3.2`  
+   *(Stanza oraz modele Helsinki-NLP pobierają swoje wagi automatycznie przy pierwszym wywołaniu odpowiedniej komendy przez bota).*
+
+### Krok 3: Konfiguracja i uruchomienie
+1. Skonfiguruj klucz API Telegrama (w zależności od implementacji w kodzie, zaktualizuj plik `.env` lub `config.py`):
    `TELEGRAM_TOKEN=twój_token_od_botfather`
-6. Uruchom aplikację: 
+2. Uruchom aplikację: 
    `python main.py`
