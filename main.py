@@ -13,9 +13,9 @@ os.environ['TF_NUM_INTEROP_THREADS'] = '1'
 
 import logging
 from dotenv import load_dotenv
-from telegram.ext import Application, CommandHandler
-
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from bot.commands import(
+    ask_command,
     train_command,
     start_command,
     task_command,
@@ -30,7 +30,9 @@ from bot.commands import(
     help_command,
     summarize_command,
     translate_command,
-    ner_command
+    ner_command,
+    ask_command,
+    photo_command
 )
 
 logging.basicConfig(
@@ -65,6 +67,8 @@ def main():
     app.add_handler(CommandHandler("summarize", summarize_command))
     app.add_handler(CommandHandler("translate", translate_command))
     app.add_handler(CommandHandler("ner", ner_command))
+    app.add_handler(CommandHandler("ask", ask_command))
+    app.add_handler(MessageHandler(filters.PHOTO, photo_command))
 
     print("Bot uruchamia się pomyślnie. Naciśnij Ctrl+C, aby zatrzymać.")
     app.run_polling()

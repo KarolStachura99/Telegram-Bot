@@ -1,6 +1,6 @@
 # Telegram Bot - NLP & Text Classification
 
-Zaawansowany bot na platformę Telegram, zbudowany w języku Python, służący do przetwarzania języka naturalnego (NLP) oraz przeprowadzania eksperymentów z zakresu uczenia maszynowego (Machine Learning), głębokich sieci neuronowych (Deep Learning) i generatywnej sztucznej inteligencji. Projekt został zrealizowany w ramach czterech etapów laboratoryjnych.
+Zaawansowany bot na platformę Telegram, zbudowany w języku Python, służący do przetwarzania języka naturalnego (NLP) oraz przeprowadzania eksperymentów z zakresu uczenia maszynowego (Machine Learning), głębokich sieci neuronowych (Deep Learning) i generatywnej sztucznej inteligencji. Projekt został zrealizowany w ramach pięciu etapów laboratoryjnych.
 
 ---
 
@@ -80,6 +80,25 @@ Czwarty etap poszerza bota o możliwości w pełni lokalnej, generatywnej sztucz
 
 ---
 
+## Etap 5: Laboratorium 5 - Agent AI, Multimodalność i Function Calling
+
+Piąty, finałowy etap wprowadza architekturę agentową, pozwalając systemowi na samodzielne podejmowanie decyzji o użyciu zewnętrznych narzędzi w celu rozwiązania problemów wykraczających poza wiedzę zawartą w wagach modelu.
+
+### Główne funkcjonalności:
+* **Autonomiczny Agent (Llama 3.2 3B):** System oparty na Function Calling. Model samodzielnie parsuje intencje użytkownika i buduje parametry JSON niezbędne do wywołania zewnętrznych skryptów Pythona.
+* **Multi-Tool Reasoning:** Zaimplementowano zestaw narzędzi deterministycznych, między którymi model potrafi planować zadania:
+  * `calculator_tool` - Precyzyjne ewaluacje matematyczne omijające halucynacje arytmetyczne LLM.
+  * `weather_tool` - Pobieranie aktualnej pogody z OpenWeatherMap z obsługą dynamicznego geokodowania.
+  * `web_search_tool` - Przełamanie Knowledge Cutoff (bariery czasowej) modelu. *Nota inżynieryjna: Z powodu zjawiska shadowbanningu (Rate Limiting HTTP 429) nakładanego przez DuckDuckGo na skrypty parsujące, narzędzie zmigrowano do stabilnego API Wikipedii (REST API), zapewniając ciągłość działania w środowisku testowym.*
+* **Multimodalność i Vision (LLaVA):** Wdrożenie modelu widzenia komputerowego. Model konwertuje odebrane z Telegrama pliki do formatu Base64 i przesyła je do instancji Ollama. Wdrożono programowanie defensywne chroniące przed zjawiskiem *Tool Argument Dropping* (zgubienie lub pusta wartość zmiennej przekazanej przez Agenta).
+
+### Dostępne komendy (Lab 5):
+* `/ask [twoje pytanie]` - Komunikacja z Agentem. 
+  * *Przykłady:* `/ask Oblicz (125 * 4) / 2` (Test kalkulatora), `/ask Jaka jest pogoda w Krakowie, a jaka w Rzymie?` (Test pogody), `/ask Kto wygrał mundial w 2022 roku?` (Test wyszukiwarki / przełamanie Knowledge Cutoff).
+* **[Wysłanie zdjęcia]** - Moduł rozpoznaje przesłane obrazy z opcjonalnym podpisem i automatycznie deleguje proces analizy pikseli do modelu wizyjnego.
+
+---
+
 ## Uruchomienie
 
 **Środowisko należy wygenerować lokalnie na podstawie pliku `requirements.txt`. Upewnij się, że spełnione są wszystkie wymagania systemowe dla modeli offline.**
@@ -94,15 +113,24 @@ Czwarty etap poszerza bota o możliwości w pełni lokalnej, generatywnej sztucz
 4. Zainstaluj wszystkie wymagane biblioteki: 
    `pip install -r requirements.txt`
 
-### Krok 2: Instalacja zasobów dla Lab 4 (Zewnętrzne modele)
+### Krok 2: Instalacja zasobów dla Lab 4 & 5 (Zewnętrzne modele)
 1. **Model spaCy dla języka polskiego:** W aktywowanym środowisku wirtualnym pobierz duży model analityczny:  
    `python -m spacy download pl_core_news_lg`
-2. **Model LLM (Ollama):** Zainstaluj oprogramowanie [Ollama](https://ollama.com/), a następnie w standardowym terminalu pobierz model używany do streszczeń (ok. 2 GB):  
-   `ollama pull llama3.2`  
-   *(Stanza oraz modele Helsinki-NLP pobierają swoje wagi automatycznie przy pierwszym wywołaniu odpowiedniej komendy przez bota).*
+2. **Środowisko Ollama (Modele Lokalne):** Zainstaluj oprogramowanie [Ollama](https://ollama.com/), a następnie w standardowym terminalu pobierz modele obsługujące Agenta oraz moduł Vision:  
+   ```bash
+   ollama pull llama3.2
+   ollama pull llava
+(Stanza oraz modele Helsinki-NLP pobierają swoje wagi automatycznie przy pierwszym wywołaniu odpowiedniej komendy przez bota).
 
-### Krok 3: Konfiguracja i uruchomienie
-1. Skonfiguruj klucz API Telegrama (w zależności od implementacji w kodzie, zaktualizuj plik `.env` lub `config.py`):
-   `TELEGRAM_TOKEN=twój_token_od_botfather`
-2. Uruchom aplikację: 
-   `python main.py`
+Krok 3: Konfiguracja i uruchomienie
+W głównym katalogu projektu znajduje się plik .env.example. Skopiuj go, zmień nazwę na .env i uzupełnij kluczami API:
+
+Fragment kodu
+
+
+TELEGRAM_TOKEN=twój_token_od_botfather
+WEATHER_API_KEY=twój_klucz_openweathermap
+Upewnij się, że serwer Ollama działa w tle.
+
+Uruchom aplikację:
+python main.py git push -u origin laboratorium4
