@@ -1,6 +1,22 @@
-venv/
+# Zmienne środowiskowe i klucze
 .env
+config.py
+
+# Środowisko wirtualne i cache Pythona
+venv/
 __pycache__/
-plots/
+*.pyc
+
+# Archiwa i pliki tymczasowe
 *.zip
 temp_image.jpg
+
+# Wygenerowane modele (wagi i tokenizery)
+models/
+*.h5
+*.pkl
+
+# Wygenerowane wykresy i artefakty
+plots/
+lab2plots/
+lab3plots/
