@@ -98,7 +98,7 @@ System decyzyjny (Ensemble Model) chroniący przed spamem, danymi wrażliwymi (P
 
 ---
 
-## 🛠 Wymagania Wstępne i Uruchomienie
+## Wymagania Wstępne i Uruchomienie
 
 1. **Klonowanie i wirtualne środowisko:**
    ```bash
